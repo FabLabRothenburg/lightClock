@@ -51,14 +51,14 @@ void setup() {
   
   WiFi.hostname(clock_name);
 
+  Serial.println("Initializing ...");
+  infoLight(pixels.Color(255, 255, 255));
+
   Serial.println("Starting WiFiManager ...");
   WiFiManager wifiManager;
   wifiManager.setConfigPortalTimeout(120);
   wifiManager.autoConnect(clock_name);
 
-  Serial.println("Initializing ...");
-  infoLight(pixels.Color(255, 255, 255));
-    
   while (WiFi.status() != WL_CONNECTED) {
     Serial.println("Waiting for WiFi ...");
     infoLight(pixels.Color(255, 0, 0));
