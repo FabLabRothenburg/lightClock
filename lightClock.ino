@@ -13,6 +13,9 @@
 
 Adafruit_NeoPixel pixels = { 60, 5, NEO_GRB + NEO_KHZ800 };
 
+static uint32_t PIXEL_COLOR_MINUTES;
+static uint32_t PIXEL_COLOR_HOURS;
+
 void infoLight(uint32_t color) {
   for (int i = 0; i < 60; i++) {
     pixels.setPixelColor(i, color);
@@ -34,7 +37,13 @@ time_t getLocalTime() {
 
 void setup() {
   Serial.begin(115200);
+
   pixels.begin();
+  pixels.clear();
+  pixels.show();
+
+  PIXEL_COLOR_MINUTES = pixels.Color(192, 0, 64);
+  PIXEL_COLOR_HOURS = pixels.Color(32, 0, 224);
 
   char clock_name[32];
   sprintf(clock_name, "lightclock-%06x", ESP.getChipId());
@@ -80,21 +89,36 @@ void loop() {
 
   h += m / 12;
 
-  for (uint8_t i = 0; i < 60; i++) {
-    pixels.setPixelColor(i, pixels.Color(0, 0, 0));
-  }
 
   h = p(h);
   m = p(m);
 
-  for (uint8_t i = h; i != m; i = (i + 1) % 60) {
-    pixels.setPixelColor(i, pixels.Color(255, 255, 0));
-  }
-
-  for (uint8_t i = m; i != h; i = (i + 1) % 60) {
-    pixels.setPixelColor(i, pixels.Color(0, 0, 255));
+  if (h == m) {
+    paintOverlayClockHands(m);
+  } else {
+    paintClockHands(h, m);
   }
   
   pixels.show();
   delay(2500);
 }
+
+void paintOverlayClockHands(uint8_t m) {
+  for (uint8_t i = 0; i < 60; i ++) {
+    pixels.setPixelColor(i, PIXEL_COLOR_HOURS);
+  }
+
+  pixels.setPixelColor(m, PIXEL_COLOR_MINUTES);
+  
+}
+
+void paintClockHands(uint8_t h, uint8_t m) {
+  for (uint8_t i = h; i != m; i = (i + 1) % 60) {
+    pixels.setPixelColor(i, PIXEL_COLOR_MINUTES);
+  }
+
+  for (uint8_t i = m; i != h; i = (i + 1) % 60) {
+    pixels.setPixelColor(i, PIXEL_COLOR_HOURS);
+  }
+}
+
