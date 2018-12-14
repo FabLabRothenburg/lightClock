@@ -111,8 +111,10 @@ void loop() {
 }
 
 void paintOverlayClockHands(uint8_t m) {
-  for (uint8_t i = 0; i < 60; i ++) {
+  for (uint8_t i = (m + 59) % 60; i != m; i = (i + 59) % 60) {
     pixels.setPixelColor(i, PIXEL_COLOR_HOURS);
+    pixels.show();
+    delay(50);
   }
 
   pixels.setPixelColor(m, PIXEL_COLOR_MINUTES);
