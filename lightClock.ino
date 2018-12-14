@@ -87,8 +87,16 @@ void loop() {
   uint8_t h = (hour(t) % 12) * 5;
   uint8_t m = minute(t);
 
-  h += m / 12;
+  static uint8_t last_m = 255;
 
+  if (last_m == m) {
+    // no change -> no repaint
+    return;
+  }
+
+  last_m = m;
+
+  h += m / 12;
 
   h = p(h);
   m = p(m);
@@ -100,7 +108,6 @@ void loop() {
   }
   
   pixels.show();
-  delay(2500);
 }
 
 void paintOverlayClockHands(uint8_t m) {
